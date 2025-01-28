@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 import pandas as pd
-from textblob import TextBlob
+#from textblob import TextBlob
 
 # Set up the Streamlit page configuration (call this first)
 st.set_page_config(page_title="Customer Review", layout="centered")
@@ -19,7 +19,7 @@ if st.button("Analyze Review"):
     if input_text.strip():
         # Perform sentiment analysis
         blob = TextBlob(input_text)
-        sentiment = blob.sentiment
+        #sentiment = blob.sentiment
 
         # Display results
         st.subheader("Results")
