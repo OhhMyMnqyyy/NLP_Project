@@ -1,51 +1,40 @@
+pip install streamlit textblob
+
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
+from textblob import TextBlob
 
-# Function to load and process the dataset
-def load_data(file):
-    df = pd.read_csv(file)
-    return df
+# Title and description
+st.set_page_config(page_title="Sentiment Analysis Dashboard", layout="centered")
+st.title("Sentiment Analysis Dashboard")
+st.write("Analyze the sentiment of your text using TextBlob. Input text below to see whether the sentiment is positive, negative, or neutral.")
 
-# Streamlit app layout
-def main():
-    st.title("Sentiment Analysis from Dataset")
-    st.subheader("Upload your dataset to analyze sentiment trends")
+# Input text area
+st.subheader("Input Text")
+input_text = st.text_area("Enter your text here:", height=200)
 
-    # File uploader
-    uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
-    
-    if uploaded_file is not None:
-        # Load the dataset
-        data = load_data(uploaded_file)
-        st.write("Dataset preview:")
-        st.write(data.head())
+# Analyze sentiment
+if st.button("Analyze Sentiment"):
+    if input_text.strip():
+        # Perform sentiment analysis
+        blob = TextBlob(input_text)
+        sentiment = blob.sentiment
 
-        # Check if required columns exist
-        if "Tweet" in data.columns and "Sentiment" in data.columns:
-            # Display sentiment distribution
-            sentiment_counts = data["Sentiment"].value_counts()
-            st.write("Sentiment distribution:")
-            st.bar_chart(sentiment_counts)
+        # Display results
+        st.subheader("Results")
+        st.write(f"**Polarity:** {sentiment.polarity:.2f} (Ranges from -1 to 1)")
+        st.write(f"**Subjectivity:** {sentiment.subjectivity:.2f} (Ranges from 0 to 1)")
 
-            # Filter by sentiment (optional feature)
-            sentiment_filter = st.selectbox(
-                "Filter by sentiment:",
-                options=["All"] + list(sentiment_counts.index),
-                index=0,
-            )
-
-            if sentiment_filter != "All":
-                filtered_data = data[data["Sentiment"] == sentiment_filter]
-                st.write(f"Filtered tweets ({sentiment_filter}):")
-                st.write(filtered_data)
-            else:
-                st.write("All tweets displayed.")
-
+        if sentiment.polarity > 0:
+            st.success("The sentiment is Positive! 😊")
+        elif sentiment.polarity < 0:
+            st.error("The sentiment is Negative! 😟")
         else:
-            st.error("The dataset must contain 'Tweet' and 'Sentiment' columns.")
+            st.info("The sentiment is Neutral. 😐")
+    else:
+        st.warning("Please enter some text to analyze.")
 
-if __name__ == "__main__":
-    main()
+# Footer
+st.write("---")
+st.write("Developed with ❤️ using Streamlit and TextBlob")
 
-streamlit run app.py
+streamlit run sentiment_dashboard.py
