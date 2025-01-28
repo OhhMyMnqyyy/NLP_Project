@@ -2,7 +2,6 @@ import csv
 import streamlit as st
 import random
 import pandas as pd
-from textblob import TextBlob
 
 # Set up the Streamlit page configuration
 st.set_page_config(page_title="Sentiment Analysis Dashboard", layout="centered")
