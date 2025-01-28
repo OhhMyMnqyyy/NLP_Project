@@ -1,2 +1,0 @@
-pip install textblob
-pip freeze > requirements.txt
