@@ -1,42 +1,57 @@
+pip install streamlit pandas sklearn
+
 import streamlit as st
-from textblob import TextBlob
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
 
-# Set up the Streamlit page configuration
-st.set_page_config(page_title="Sentiment Analysis Dashboard", layout="centered")
+# App title
+st.title("Sentiment Analysis for Customer Reviews")
 
-# Title and description
-st.title("Sentiment Analysis Dashboard")
-st.write("Analyze the sentiment of your text using TextBlob. Input text below to see whether the sentiment is positive, negative, or neutral.")
+# Step 1: Upload the CSV file
+uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 
-# Input text area
-st.subheader("Input Text")
-input_text = st.text_area("Enter your text here:", height=200)
+if uploaded_file:
+    # Step 2: Load the dataset
+    data = pd.read_csv(uploaded_file)
+    st.write("Preview of the dataset:", data.head())
 
-# Analyze sentiment when the button is clicked
-if st.button("Analyze Sentiment"):
-    if input_text.strip():
-        # Perform sentiment analysis
-        blob = TextBlob(input_text)
-        sentiment = blob.sentiment
+    if 'Review' in data.columns and 'Sentiment' in data.columns:
+        # Step 3: Data Preprocessing
+        X = data['Review']
+        y = data['Sentiment']
 
-        # Display results
-        st.subheader("Results")
-        st.write(f"**Polarity:** {sentiment.polarity:.2f} (Ranges from -1 to 1)")
-        st.write(f"**Subjectivity:** {sentiment.subjectivity:.2f} (Ranges from 0 to 1)")
+        # Splitting the dataset
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        # Provide sentiment classification
-        if sentiment.polarity > 0:
-            st.success("The sentiment is Positive! 😊")
-        elif sentiment.polarity < 0:
-            st.error("The sentiment is Negative! 😟")
-        else:
-            st.info("The sentiment is Neutral. 😐")
+        # Vectorizing text data
+        vectorizer = CountVectorizer()
+        X_train_vec = vectorizer.fit_transform(X_train)
+        X_test_vec = vectorizer.transform(X_test)
+
+        # Step 4: Train a Naive Bayes model
+        model = MultinomialNB()
+        model.fit(X_train_vec, y_train)
+
+        # Step 5: Evaluate the model
+        y_pred = model.predict(X_test_vec)
+        accuracy = accuracy_score(y_test, y_pred)
+        st.write(f"Model Accuracy: {accuracy * 100:.2f}%")
+
+        # Step 6: Make Predictions
+        st.subheader("Test the Model")
+        user_input = st.text_area("Enter a customer review:")
+
+        if st.button("Predict"):
+            if user_input:
+                input_vec = vectorizer.transform([user_input])
+                prediction = model.predict(input_vec)[0]
+                st.write(f"Predicted Sentiment: **{prediction}**")
+            else:
+                st.write("Please enter a review to analyze.")
     else:
-        st.warning("Please enter some text to analyze.")
+        st.error("The uploaded file must contain 'Review' and 'Sentiment' columns.")
 
-# Footer
-st.write("---")
-st.write("Developed with ❤️ using Streamlit and TextBlob")
-
-streamlit run sentiment_dashboard.py
-
+streamlit run app.py
