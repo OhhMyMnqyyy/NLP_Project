@@ -1,21 +1,19 @@
 import streamlit as st
-import random
-import pandas as pd
 from textblob import TextBlob
 
-# Set up the Streamlit page configuration (call this first)
-st.set_page_config(page_title="Customer Review", layout="centered")
+# Set up the Streamlit page configuration
+st.set_page_config(page_title="Sentiment Analysis Dashboard", layout="centered")
 
 # Title and description
-st.title("Customer Review Analyzer")
-st.write("Analyze customer review. Input text below to see whether the review is positive, negative, or neutral.")
+st.title("Sentiment Analysis Dashboard")
+st.write("Analyze the sentiment of your text using TextBlob. Input text below to see whether the sentiment is positive, negative, or neutral.")
 
 # Input text area
 st.subheader("Input Text")
-input_text = st.text_area("Enter text for review analysis")
+input_text = st.text_area("Enter your text here:", height=200)
 
 # Analyze sentiment when the button is clicked
-if st.button("Analyze Review"):
+if st.button("Analyze Sentiment"):
     if input_text.strip():
         # Perform sentiment analysis
         blob = TextBlob(input_text)
@@ -35,3 +33,7 @@ if st.button("Analyze Review"):
             st.info("The sentiment is Neutral. 😐")
     else:
         st.warning("Please enter some text to analyze.")
+
+# Footer
+st.write("---")
+st.write("Developed with ❤️ using Streamlit and TextBlob")
