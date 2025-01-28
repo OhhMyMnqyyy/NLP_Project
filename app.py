@@ -1,55 +1,86 @@
-import nltk
+from attr import has
 import streamlit as st
-import pandas as pd
-from nltk.sentiment import SentimentIntensityAnalyzer
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
+import matplotlib.pyplot as plt
+from sentiment import preprocessing_data, graph_sentiment, analyse_mention, analyse_hashtag, download_data, gen_wordcloud, gen_poswordcloud, gen_neuwordcloud, gen_negwordcloud, subjectivity, countvector
 
-# Load and preprocess data
-@st.cache
-def load_data(filepath):
-    data = pd.read_csv(filepath)
-    data = data[['tweet', 'sentiment']]  # Ensure required columns exist
-    return data
+st.set_page_config(
+    page_title="Twitter sentiment analysis",
+    page_icon="🕸",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://github.com/santanukumar666/Twitter-Sentiment-Analysis',
+        'About': "## A Twitter sentiment analysis webappTwitter Sentment Analysis Web App using #Hashtag and username to fetch tweets and tells the sentiment of the perticular #Hashtag or username. "
+    }
+)
 
-# Train a simple sentiment model
-@st.cache
-def train_model(data):
-    vectorizer = CountVectorizer(stop_words='english')
-    X = vectorizer.fit_transform(data['tweet'])
-    y = data['sentiment']
-    
-    model = MultinomialNB()
-    model.fit(X, y)
-    return vectorizer, model
 
-# Streamlit app
-def main():
-    st.title("Twitter Sentiment Analysis")
-    
-    # Sidebar
-    st.sidebar.header("Upload CSV Data")
-    uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
-    
-    if uploaded_file:
-        data = load_data(uploaded_file)
-        st.subheader("Dataset Preview")
-        st.dataframe(data.head())
-        
-        # Split data and train model
-        vectorizer, model = train_model(data)
-        
-        # Input for new tweet
-        st.subheader("Test New Tweet")
-        tweet_input = st.text_input("Enter a tweet:")
-        
-        if tweet_input:
-            tweet_vector = vectorizer.transform([tweet_input])
-            prediction = model.predict(tweet_vector)[0]
-            st.write(f"Sentiment Prediction: **{prediction.capitalize()}**")
-    else:
-        st.info("Please upload a dataset to begin.")
+st.title("Twitter Sentimental Analysis")
 
-if __name__ == "__main__":
-    main()
+function_option = st.sidebar.selectbox("Select The Funtionality: ", [
+                                       "Search By #Tag and Words", "Search By Username"])
+
+if function_option == "Search By #Tag and Words":
+    word_query = st.text_input("Enter the Hashtag or any topic")
+
+if function_option == "Search By Username":
+    word_query = st.text_input("Enter the Username without @ ")
+
+number_of_tweets = st.slider("How many tweets You want to collect from {}".format(
+    word_query), min_value=100, max_value=10000)
+st.info("1 Tweets takes approx 0.05 sec so you may have to wait {} minute for {} Tweets".format(
+    round((number_of_tweets*0.05/60), 2), number_of_tweets))
+
+if st.button("Analysis Sentiment"):
+
+    data = preprocessing_data(word_query, number_of_tweets, function_option)
+    analyse = graph_sentiment(data)
+    mention = analyse_mention(data)
+    hashtag = analyse_hashtag(data)
+    img = gen_wordcloud(data)
+    img1 = gen_poswordcloud(data)
+    img2 = gen_neuwordcloud(data)
+    img3 = gen_negwordcloud(data)
+    subject = subjectivity(data)
+    countdf = countvector(data)
+
+    st.write(" ")
+    st.header("Extracted and Preprocessed Tweets")
+    st.write(data)
+    download_data(data, label="twitter_sentiment_filtered")
+    st.write(" ")
+
+    col1, col2, col3 = st.columns(3)
+    with col2:
+        st.markdown("### Exploratory data analysis on the Tweets")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.text("Top 10 Hashtags used in {} tweets".format(number_of_tweets))
+        st.bar_chart(hashtag)
+    with col2:
+
+        st.text("Most used words in the Tweets")
+        st.bar_chart(countdf[1:11])
+
+    col3, col4 = st.columns([1.5, 1])
+    with col3:
+        st.text("Wordcloud for {} tweets".format(number_of_tweets))
+        st.image(img)
+    with col4:
+        st.text("Top 10 @Mentions in {} tweets".format(number_of_tweets))
+        st.bar_chart(mention)
+    col5, col6, col7 = st.columns(3)
+    with col5:
+        st.text("Wordcloud for Positive tweets")
+        st.image(img1)
+    with col6:
+        st.text("Wordcloud for Neutral tweets")
+        st.image(img2)
+    with col7:
+        st.text("Wordcloud for Negative tweets")
+        st.image(img3)
+    st.subheader("Twitter Sentment Analysis")
+    st.bar_chart(analyse)
