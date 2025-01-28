@@ -61,3 +61,5 @@ if uploaded_file:
 else:
     st.info("Please upload a CSV file to proceed.")
 
+streamlit run app.py
+
