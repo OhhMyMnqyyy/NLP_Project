@@ -1,5 +1,3 @@
-pip install streamlit pandas sklearn
-
 import streamlit as st
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -53,7 +51,3 @@ if uploaded_file:
                 st.write("Please enter a review to analyze.")
     else:
         st.error("The uploaded file must contain 'Review' and 'Sentiment' columns.")
-
-streamlit run app.py
-
-
