@@ -1,5 +1,3 @@
-pip install textblob
-
 import csv
 import streamlit as st
 import random
