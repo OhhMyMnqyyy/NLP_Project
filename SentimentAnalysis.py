@@ -36,3 +36,6 @@ if st.button("Analyze Sentiment"):
 # Footer
 st.write("---")
 st.write("Developed with ❤️ using Streamlit and TextBlob")
+
+streamlit run sentiment_dashboard.py
+
