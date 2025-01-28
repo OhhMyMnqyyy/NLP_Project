@@ -1,6 +1,2 @@
 pip install textblob
 pip freeze > requirements.txt
-
-git add requirements.txt
-git commit -m "Add textblob to requirements"
-git push
