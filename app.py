@@ -5,52 +5,69 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 
-# App title
+# Streamlit app title
 st.title("Sentiment Analysis for Customer Reviews")
+st.subheader("Analyze customer reviews and classify them as Positive, Negative, or Neutral.")
 
-# Step 1: Upload the CSV file
-uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
-
+# Step 1: File Upload
+uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 if uploaded_file:
-    # Step 2: Load the dataset
-    data = pd.read_csv(uploaded_file)
-    st.write("Preview of the dataset:", data.head())
+    try:
+        # Step 2: Load Dataset
+        data = pd.read_csv(uploaded_file)
+        st.write("Dataset Preview:")
+        st.dataframe(data.head())
 
-    if 'Review' in data.columns and 'Sentiment' in data.columns:
-        # Step 3: Data Preprocessing
-        X = data['Review']
-        y = data['Sentiment']
+        # Ensure the required columns are present
+        if 'Review' in data.columns and 'Sentiment' in data.columns:
+            st.success("Dataset is valid and ready to process.")
 
-        # Splitting the dataset
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            # Step 3: Preprocessing
+            X = data['Review']
+            y = data['Sentiment']
 
-        # Vectorizing text data
-        vectorizer = CountVectorizer()
-        X_train_vec = vectorizer.fit_transform(X_train)
-        X_test_vec = vectorizer.transform(X_test)
+            # Split data into train and test sets
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        # Step 4: Train a Naive Bayes model
-        model = MultinomialNB()
-        model.fit(X_train_vec, y_train)
+            # Vectorize text data
+            vectorizer = CountVectorizer()
+            X_train_vec = vectorizer.fit_transform(X_train)
+            X_test_vec = vectorizer.transform(X_test)
 
-        # Step 5: Evaluate the model
-        y_pred = model.predict(X_test_vec)
-        accuracy = accuracy_score(y_test, y_pred)
-        st.write(f"Model Accuracy: {accuracy * 100:.2f}%")
+            # Step 4: Train Naive Bayes Model
+            model = MultinomialNB()
+            model.fit(X_train_vec, y_train)
 
-        # Step 6: Make Predictions
-        st.subheader("Test the Model")
-        user_input = st.text_area("Enter a customer review:")
+            # Step 5: Model Evaluation
+            y_pred = model.predict(X_test_vec)
+            accuracy = accuracy_score(y_test, y_pred)
+            st.write(f"Model Accuracy: **{accuracy * 100:.2f}%**")
 
-        if st.button("Predict"):
-            if user_input:
-                input_vec = vectorizer.transform([user_input])
-                prediction = model.predict(input_vec)[0]
-                st.write(f"Predicted Sentiment: **{prediction}**")
-            else:
-                st.write("Please enter a review to analyze.")
-    else:
-        st.error("The uploaded file must contain 'Review' and 'Sentiment' columns.")
+            # Step 6: Test the Model
+            st.subheader("Test the Model with Your Input")
+            user_input = st.text_area("Enter a customer review to analyze:")
 
-streamlit run app.py
+            if st.button("Analyze Sentiment"):
+                if user_input.strip():
+                    input_vec = vectorizer.transform([user_input])
+                    prediction = model.predict(input_vec)[0]
+                    st.write(f"Predicted Sentiment: **{prediction.capitalize()}**")
+                else:
+                    st.warning("Please enter a review to analyze.")
+        else:
+            st.error("The dataset must contain 'Review' and 'Sentiment' columns.")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+else:
+    st.info("Please upload a CSV file to proceed.")
 
+# Step 7: Footer Information
+st.markdown("""
+---
+**Notes:**
+1. The uploaded CSV must contain two columns: `Review` (text of the review) and `Sentiment` (labels like `positive`, `negative`, or `neutral`).
+2. Example reviews:
+    - Positive: "This product is amazing!"
+    - Negative: "Terrible experience, never buying again."
+    - Neutral: "It was okay, not great but not bad."
+""")
