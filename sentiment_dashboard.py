@@ -34,9 +34,6 @@ if st.button("Analyze Sentiment"):
     else:
         st.warning("Please enter some text to analyze.")
 
-# Footer
-st.write("---")
-st.write("Developed with ❤️ using Streamlit and TextBlob")
 
 streamlit run sentiment_dashboard.py
 
