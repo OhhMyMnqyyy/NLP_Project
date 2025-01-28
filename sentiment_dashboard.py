@@ -14,7 +14,7 @@ st.write("Analyze the sentiment of your text using TextBlob. Input text below to
 
 # Input text area
 st.subheader("Input Text")
-input_text = st.text_area("Enter your text here:", height=200)
+input_text = st.text_area("Enter text for sentiment analysis")
 
 # Analyze sentiment when the button is clicked
 if st.button("Analyze Sentiment"):
