@@ -38,5 +38,3 @@ if st.button("Analyze Sentiment"):
         st.warning("Please enter some text to analyze.")
 
 
-streamlit run sentiment_dashboard.py
-
