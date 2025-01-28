@@ -51,3 +51,6 @@ if uploaded_file:
                 st.write("Please enter a review to analyze.")
     else:
         st.error("The uploaded file must contain 'Review' and 'Sentiment' columns.")
+
+streamlit run app.py
+
