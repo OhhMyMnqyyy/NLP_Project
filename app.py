@@ -54,3 +54,6 @@ if uploaded_file:
     else:
         st.error("The uploaded file must contain 'Review' and 'Sentiment' columns.")
 
+streamlit run app.py
+
+
