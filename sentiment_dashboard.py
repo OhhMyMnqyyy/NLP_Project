@@ -1,4 +1,4 @@
-from textblob import TextBlob
+#from textblob import TextBlob
 import csv
 import streamlit as st
 import random
