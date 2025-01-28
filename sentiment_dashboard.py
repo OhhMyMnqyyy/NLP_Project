@@ -1,10 +1,7 @@
-#from textblob import TextBlob
-import csv
 import streamlit as st
-import random
-import pandas as pd
+from textblob import TextBlob
 
-# Set up the Streamlit page configuration
+# Set up the Streamlit page configuration (call this first)
 st.set_page_config(page_title="Customer Review", layout="centered")
 
 # Title and description
@@ -36,5 +33,3 @@ if st.button("Analyze Review"):
             st.info("The sentiment is Neutral. 😐")
     else:
         st.warning("Please enter some text to analyze.")
-
-
