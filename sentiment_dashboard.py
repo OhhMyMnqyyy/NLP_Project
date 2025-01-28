@@ -1,3 +1,5 @@
+pip install streamlit textblob
+
 import streamlit as st
 from textblob import TextBlob
 
@@ -35,5 +37,6 @@ if st.button("Analyze Sentiment"):
 st.write("---")
 st.write("Developed with ❤️ using Streamlit and TextBlob")
 
-streamlit run SentimentAnalysis.py
+streamlit run sentiment_dashboard.py
+
 
