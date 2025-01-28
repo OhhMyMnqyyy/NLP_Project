@@ -1,7 +1,16 @@
+pip install textblob
+
+from textblob import TextBlob
+
 import csv
 import streamlit as st
 import random
 import pandas as pd
+
+import nltk
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
 
 # Set up the Streamlit page configuration
 st.set_page_config(page_title="Sentiment Analysis Dashboard", layout="centered")
