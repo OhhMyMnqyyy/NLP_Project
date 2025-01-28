@@ -61,13 +61,3 @@ if uploaded_file:
 else:
     st.info("Please upload a CSV file to proceed.")
 
-# Step 7: Footer Information
-st.markdown("""
----
-**Notes:**
-1. The uploaded CSV must contain two columns: `Review` (text of the review) and `Sentiment` (labels like `positive`, `negative`, or `neutral`).
-2. Example reviews:
-    - Positive: "This product is amazing!"
-    - Negative: "Terrible experience, never buying again."
-    - Neutral: "It was okay, not great but not bad."
-""")
